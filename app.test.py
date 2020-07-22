@@ -1,3 +1,4 @@
+import json
 import os
 import tempfile
 import unittest
@@ -112,6 +113,11 @@ class FlaskrTestCase(unittest.TestCase):
         assert b'Aucun articles encore poste' not in response.data
         assert b'&lt;Hello World&gt;' in response.data
         assert b'<strong> Ce texte est du HTML ! :-)</strong>' in response.data
+
+    def test_delete_message(self):
+        response = self.app.get('/delete/1')
+        data = json.loads(response.data.decode('utf-8'))
+        self.assertEqual(data['status'], 1)
 
 
 if __name__ == '__main__':

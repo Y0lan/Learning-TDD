@@ -88,6 +88,20 @@ def add_articles():
     return redirect(url_for('index'))
 
 
+@app.route('/delete/<id>', methods=['GET'])
+def delete_entry(id):
+    """Delete post from database"""
+    result = {'status': 0, 'message': 'Erreur'}
+    try:
+        db = get_db()
+        db.execute('delete from articles where id=' + id)
+        db.commit()
+        result = {'status': 1, 'message': "Article Supprime"}
+    except Exception as e:
+        result = {'status': 0, 'message': repr(e)}
+    return jsonify(result)
+
+
 if __name__ == '__main__':
     init_db()
     app.run()

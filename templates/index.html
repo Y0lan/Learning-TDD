@@ -36,11 +36,13 @@
 
     <ul class="articles">
       {% for article in articles %}
-        <li><h2>{{ article.titre }}</h2>{{ article.contenu|safe }}</li>
+        <li><h2 id="{{ article.id }}">{{ article.titre }}</h2>
+          {{ article.contenu|safe }}</li>
       {% else %}
         <li id="no-content"><em>Aucun article pour le moment</em></li>
       {% endfor %}
     </ul>
   </div>
+  <script type="text/javascript" src="{{url_for('static', filename='main.js') }}"></script>
 </body>
 </html>
