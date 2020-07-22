@@ -38,7 +38,7 @@
       {% for article in articles %}
         <li><h2>{{ article.titre }}</h2>{{ article.contenu|safe }}</li>
       {% else %}
-        <li><em>Aucun article pour le moment</em></li>
+        <li id="no-content"><em>Aucun article pour le moment</em></li>
       {% endfor %}
     </ul>
   </div>

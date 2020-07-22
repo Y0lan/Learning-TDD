@@ -3,6 +3,13 @@ import tempfile
 import unittest
 import app
 
+# IHM
+import pytest
+from selenium.webdriver import Firefox
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.wait import WebDriverWait
+
 
 class TestingBasicOfWebsite(unittest.TestCase):
     def test_index(self):
@@ -13,6 +20,34 @@ class TestingBasicOfWebsite(unittest.TestCase):
     def test_database_exist(self):
         tester = os.path.exists('database.db')
         self.assertTrue(tester)
+
+
+class TestFlaskrHIMTestCase:
+    @pytest.fixture
+    def browser(self):
+        opts = Options()
+        opts.headless = False
+        driver = Firefox(options=opts)
+        driver.implicitly_wait(10)
+        yield driver
+        driver.quit()
+
+    def testDbIsEmpty(self):
+        self.browser.get('http://localhost:5000/')
+        content = self.browser.find_element_by_id('no-content').text
+        assert 'Aucun article pour le moment' in content
+
+    def testUserCanLogin(self):
+        pass
+
+    def testUserCanLogout(self):
+        pass
+
+    def testUserCannotLoginWithoutCorrectCredential(self):
+        pass
+
+    def testUserCanPostArticles(self):
+        pass
 
 
 class FlaskrTestCase(unittest.TestCase):
