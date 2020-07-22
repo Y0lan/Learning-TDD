@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
   <title>Flaskr</title>
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
@@ -10,9 +10,9 @@
 
     <div class="metanav">
       {% if not session.logged_in %}
-        <a class="btn btn-success" role="button" href="{{ url_for('login') }}">log in</a>
+        <a class="btn btn-success" role="button" id="login" href="{{ url_for('login') }}">log in</a>
       {% else %}
-        <a class="btn btn-warning" role="button" href="{{ url_for('logout') }}">log out</a>
+        <a class="btn btn-warning" role="button" id="logout" href="{{ url_for('logout') }}">log out</a>
       {% endif %}
     </div>
 
@@ -23,7 +23,7 @@
     {% block body %}{% endblock %}
 
     {% if session.logged_in %}
-      <form action="{{ url_for('add_articles') }}" method="post" class="add-articles form-group">
+      <form action="{{ url_for('add_articles') }}" id="post_articles" method="post" class="add-articles form-group">
         <dl>
           <dt>Title:</dt>
           <dd><input type="text" size="30" name="titre" class="form-control col-sm-4"></dd>
@@ -36,7 +36,7 @@
 
     <ul class="articles">
       {% for article in articles %}
-        <li><h2 id="{{ article.id }}">{{ article.titre }}</h2>
+        <li class="article"><h2 id="{{ article.id }}">{{ article.titre }}</h2>
           {{ article.contenu|safe }}</li>
       {% else %}
         <li id="no-content"><em>Aucun article pour le moment</em></li>

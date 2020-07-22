@@ -1,6 +1,9 @@
-import sqlite3
+import os
 from flask import Flask, request, session, g, redirect, url_for, \
     abort, render_template, flash, jsonify
+from flask_sqlalchemy import SQLAlchemy
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 # configuration
 DATABASE = 'database.db'
@@ -8,46 +11,21 @@ DEBUG = True
 SECRET_KEY = 'password'
 USERNAME = 'admin'
 PASSWORD = 'admin'
+DATABASE_PATH = os.path.join(basedir, DATABASE)
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE_PATH
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # initialisation
 app = Flask(__name__)
 app.config.from_object(__name__)
+db = SQLAlchemy(app)
 
-
-# creation de la bdd
-def init_db():
-    with app.app_context():
-        db = get_db()
-        with app.open_resource('sql/schema.sql', mode='r') as f:
-            db.cursor().executescript(f.read())
-        db.commit()
-
-
-# connection à la bdd
-def connect_db():
-    db = sqlite3.connect(app.config['DATABASE'])
-    db.row_factory = sqlite3.Row
-    return db
-
-
-# ouvre la connection
-def get_db():
-    if not hasattr(g, 'sqlite_db'):
-        g.sqlite_db = connect_db()
-    return g.sqlite_db
-
-
-@app.teardown_appcontext
-def close_db(error):
-    if hasattr(g, 'sqlite_db'):
-        g.sqlite_db.close()
+import models
 
 
 @app.route('/')
 def index():
-    db = get_db()
-    current = db.execute('select * from articles order by id desc')
-    articles = current.fetchall()
+    articles = db.session.query(models.Flaskr)
     return render_template('index.html', articles=articles)
 
 
@@ -78,12 +56,9 @@ def logout():
 def add_articles():
     if not session.get('logged_in'):
         abort(401)
-    db = get_db()
-    db.execute(
-        'insert into articles (titre, contenu) values (?, ?)',
-        [request.form['titre'], request.form['contenu']]
-    )
-    db.commit()
+    article = models.Flaskr(request.form['titre'], request.form['contenu'])
+    db.session.add(article)
+    db.session.commit()
     flash('Succès!')
     return redirect(url_for('index'))
 
@@ -93,15 +68,14 @@ def delete_entry(id):
     """Delete post from database"""
     result = {'status': 0, 'message': 'Erreur'}
     try:
-        db = get_db()
-        db.execute('delete from articles where id=' + id)
-        db.commit()
+        db.session.query(models.Flaskr).filter_by(id=id).delete()
+        db.session.commit()
         result = {'status': 1, 'message': "Article Supprime"}
+        flash('Article supprime')
     except Exception as e:
         result = {'status': 0, 'message': repr(e)}
     return jsonify(result)
 
 
 if __name__ == '__main__':
-    init_db()
     app.run()

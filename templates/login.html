@@ -10,9 +10,9 @@
 
     <div class="metanav">
       {% if not session.logged_in %}
-        <a class="btn btn-primary" ref="{{ url_for('login') }}">log in</a>
+        <a class="btn btn-primary" id="login" ref="{{ url_for('login') }}">log in</a>
       {% else %}
-        <a class="btn btn-warning" href="{{ url_for('logout') }}">log out</a>
+        <a class="btn btn-warning" id="logout" href="{{ url_for('logout') }}">log out</a>
       {% endif %}
     </div>
 
@@ -28,7 +28,7 @@
       <p class="alert alert-danger col-sm-4" role="danger"><strong>Error:</strong> {{ error }}</p>
     {% endif %}
 
-    <form action="{{ url_for('login') }}" class="form-group" method="post">
+    <form action="{{ url_for('login') }}" class="form-group" id="loginform" method="post">
       <dl>
         <dt>Username:</dt>
         <dd><input type="text" name="username" class="form-control col-sm-4"></dd>
